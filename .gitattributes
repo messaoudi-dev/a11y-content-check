@@ -1,0 +1,14 @@
+# Im Repository immer LF, in der Arbeitskopie das, was das System nutzt.
+* text=auto eol=lf
+
+# Binärdateien nie umschreiben.
+*.png binary
+*.jpg binary
+
+# Gehört nicht in ein Release-Archiv des Plugins.
+/.github       export-ignore
+/tests         export-ignore
+/.gitattributes export-ignore
+/.gitignore    export-ignore
+/phpunit.xml.dist export-ignore
+/composer.lock export-ignore
