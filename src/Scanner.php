@@ -9,8 +9,6 @@ declare( strict_types = 1 );
 
 namespace A11yContentCheck;
 
-use DOMDocument;
-use DOMXPath;
 use WP_Query;
 
 /**
@@ -85,7 +83,7 @@ final class Scanner {
 			return array();
 		}
 
-		$xpath    = $this->to_xpath( $html );
+		$xpath    = Html::to_xpath( $html );
 		$findings = array();
 
 		foreach ( $this->checks as $check ) {
@@ -93,29 +91,5 @@ final class Scanner {
 		}
 
 		return $findings;
-	}
-
-	/**
-	 * Macht aus einem HTML-Fragment ein durchsuchbares Dokument.
-	 *
-	 * @param string $html Das HTML.
-	 */
-	private function to_xpath( string $html ): DOMXPath {
-		$document = new DOMDocument();
-
-		// loadHTML nimmt ohne Hinweis ISO-8859-1 an und zerstört damit
-		// Umlaute. Die vorangestellte XML-Deklaration ist der übliche Weg,
-		// ihm UTF-8 mitzuteilen.
-		$previous = libxml_use_internal_errors( true );
-
-		$document->loadHTML(
-			'<?xml encoding="utf-8" ?>' . $html,
-			LIBXML_NOERROR | LIBXML_NOWARNING
-		);
-
-		libxml_clear_errors();
-		libxml_use_internal_errors( $previous );
-
-		return new DOMXPath( $document );
 	}
 }
