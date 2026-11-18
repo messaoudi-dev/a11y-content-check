@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace A11yContentCheck\Admin;
 
+use A11yContentCheck\Checks\FormLabelCheck;
 use A11yContentCheck\Checks\ImageAltCheck;
 use A11yContentCheck\Checks\LinkTextCheck;
 use A11yContentCheck\Scanner;
@@ -107,6 +108,7 @@ final class AdminPage {
 	 */
 	private function create_scanner(): Scanner {
 		return new Scanner(
+			new FormLabelCheck(),
 			new ImageAltCheck(),
 			new LinkTextCheck(
 				(array) apply_filters(
