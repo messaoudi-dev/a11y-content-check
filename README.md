@@ -135,11 +135,10 @@ und führt die Tests auf PHP 8.2 bis 8.4 aus.
 
 ## Entstehung
 
-Dieses Plugin ist im Dialog mit Claude (Anthropic) entstanden. Der Zuschnitt der vier
-Prüfungen, die Entwurfsentscheidungen – insbesondere die Trennung der Prüfungen von
-WordPress – und die Überprüfung jeder einzelnen Ausgabe liegen bei mir. Jeder Schritt
-wurde lokal auf einer WordPress-Installation getestet, bevor er committet wurde; die
-Commit-Historie bildet diese Reihenfolge ab.
+Entstanden mit KI-Unterstützung (Claude). Architektur, Zuschnitt der vier
+Prüfungen und die Prüfung jeder Ausgabe liegen bei mir; jeder Schritt wurde
+lokal auf einer WordPress-Installation getestet, bevor er committet wurde.
+Die Commit-Historie zeigt die Reihenfolge.
 
 ## Lizenz
 
