@@ -1,0 +1,28 @@
+{
+	"name": "messaoudi-dev/a11y-content-check",
+	"description": "WordPress-Plugin: prüft veröffentlichte Inhalte auf vier häufige Barrierefreiheitsfehler im HTML.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.1"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^11.5"
+	},
+	"autoload": {
+		"psr-4": {
+			"A11yContentCheck\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"A11yContentCheck\\Tests\\": "tests/"
+		}
+	},
+	"scripts": {
+		"test": "phpunit"
+	},
+	"config": {
+		"sort-packages": true
+	}
+}
