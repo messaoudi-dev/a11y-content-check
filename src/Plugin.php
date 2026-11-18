@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace A11yContentCheck;
 
+use A11yContentCheck\Admin\AdminPage;
+
 /**
  * Hängt die Bestandteile des Plugins in WordPress ein.
  */
@@ -19,6 +21,10 @@ final class Plugin {
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
+
+		if ( is_admin() ) {
+			( new AdminPage() )->register();
+		}
 	}
 
 	/**
