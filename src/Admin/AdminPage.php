@@ -13,6 +13,7 @@ use A11yContentCheck\Checks\FormLabelCheck;
 use A11yContentCheck\Checks\HeadingOrderCheck;
 use A11yContentCheck\Checks\ImageAltCheck;
 use A11yContentCheck\Checks\LinkTextCheck;
+use A11yContentCheck\Finding;
 use A11yContentCheck\Scanner;
 
 /**
@@ -83,7 +84,7 @@ final class AdminPage {
 			</form>
 
 			<?php if ( null !== $results ) : ?>
-				<div class="notice notice-success">
+				<div class="notice notice-info">
 					<p>
 						<?php
 						echo esc_html(
@@ -97,9 +98,96 @@ final class AdminPage {
 						?>
 					</p>
 				</div>
+
+				<?php $this->render_results( $results ); ?>
 			<?php endif; ?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Zeichnet die Ergebnistabelle.
+	 *
+	 * @param array<int, Finding[]> $results Ergebnis des Scanners.
+	 */
+	private function render_results( array $results ): void {
+		$with_findings = array_filter(
+			$results,
+			static fn( array $findings ): bool => array() !== $findings
+		);
+
+		if ( array() === $with_findings ) {
+			printf(
+				'<p>%s</p>',
+				esc_html__( 'Keine Befunde. Alle geprüften Inhalte sind in Ordnung.', 'a11y-content-check' )
+			);
+
+			return;
+		}
+		?>
+		<table class="wp-list-table widefat striped">
+			<caption class="screen-reader-text">
+				<?php esc_html_e( 'Gefundene Barrierefreiheitsfehler, nach Seite gruppiert', 'a11y-content-check' ); ?>
+			</caption>
+			<thead>
+				<tr>
+					<th scope="col"><?php esc_html_e( 'Seite', 'a11y-content-check' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Art', 'a11y-content-check' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Befund', 'a11y-content-check' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Fundstelle', 'a11y-content-check' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach ( $with_findings as $post_id => $findings ) : ?>
+					<?php foreach ( array_values( $findings ) as $index => $finding ) : ?>
+						<tr>
+							<?php if ( 0 === $index ) : ?>
+								<th scope="rowgroup" rowspan="<?php echo (int) count( $findings ); ?>">
+									<?php $this->render_post_link( (int) $post_id ); ?>
+								</th>
+							<?php endif; ?>
+							<td><?php echo esc_html( $this->severity_label( $finding->severity ) ); ?></td>
+							<td><?php echo esc_html( $finding->message ); ?></td>
+							<td><code><?php echo esc_html( $finding->snippet ); ?></code></td>
+						</tr>
+					<?php endforeach; ?>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+		<?php
+	}
+
+	/**
+	 * Zeichnet den Titel eines Beitrags, wenn möglich als Link in den Editor.
+	 *
+	 * @param int $post_id Die Beitrags-ID.
+	 */
+	private function render_post_link( int $post_id ): void {
+		$title = get_the_title( $post_id );
+		$link  = get_edit_post_link( $post_id );
+
+		if ( null === $link || '' === $link ) {
+			echo esc_html( $title );
+
+			return;
+		}
+
+		printf(
+			'<a href="%s">%s</a>',
+			esc_url( $link ),
+			esc_html( $title )
+		);
+	}
+
+	/**
+	 * Übersetzt die Schwere in ein Wort für die Tabelle.
+	 *
+	 * @param string $severity Finding::SEVERITY_ERROR oder SEVERITY_WARNING.
+	 */
+	private function severity_label( string $severity ): string {
+		return Finding::SEVERITY_WARNING === $severity
+			? __( 'Warnung', 'a11y-content-check' )
+			: __( 'Fehler', 'a11y-content-check' );
 	}
 
 	/**
@@ -124,7 +212,7 @@ final class AdminPage {
 	/**
 	 * Zählt alle Befunde über alle Beiträge hinweg.
 	 *
-	 * @param array<int, \A11yContentCheck\Finding[]> $results Ergebnis des Scanners.
+	 * @param array<int, Finding[]> $results Ergebnis des Scanners.
 	 */
 	private function count_findings( array $results ): int {
 		$total = 0;
