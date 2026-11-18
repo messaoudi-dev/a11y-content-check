@@ -5,7 +5,7 @@
  * Description:       Prüft veröffentlichte Seiten und Beiträge auf vier häufige Barrierefreiheitsfehler im HTML.
  * Version:           0.1.0
  * Requires at least: 6.0
- * Requires PHP:      8.0
+ * Requires PHP:      8.1
  * Author:            Ayoub Messaoudi
  * Author URI:        https://github.com/messaoudi-dev
  * License:           GPL-2.0-or-later

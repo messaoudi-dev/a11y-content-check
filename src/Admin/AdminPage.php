@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace A11yContentCheck\Admin;
 
+use A11yContentCheck\Scanner;
+
 /**
  * Registriert und zeichnet die Seite "Barrierefreiheit" im Backend.
  */
@@ -57,10 +59,11 @@ final class AdminPage {
 			wp_die( esc_html__( 'Du hast keine Berechtigung für diese Seite.', 'a11y-content-check' ) );
 		}
 
-		$scan_requested = isset( $_POST['a11y_scan'] );
+		$results = null;
 
-		if ( $scan_requested ) {
+		if ( isset( $_POST['a11y_scan'] ) ) {
 			check_admin_referer( self::NONCE_ACTION );
+			$results = $this->create_scanner()->scan();
 		}
 		?>
 		<div class="wrap">
@@ -75,12 +78,47 @@ final class AdminPage {
 				<?php submit_button( __( 'Prüfung starten', 'a11y-content-check' ), 'primary', 'a11y_scan' ); ?>
 			</form>
 
-			<?php if ( $scan_requested ) : ?>
-				<div class="notice notice-info">
-					<p><?php esc_html_e( 'Formular angekommen, Nonce geprüft. Der Scanner folgt in Schritt 3.', 'a11y-content-check' ); ?></p>
+			<?php if ( null !== $results ) : ?>
+				<div class="notice notice-success">
+					<p>
+						<?php
+						echo esc_html(
+							sprintf(
+								/* translators: 1: Anzahl geprüfter Inhalte. 2: Anzahl der Befunde. */
+								__( '%1$d Seiten und Beiträge geprüft, %2$d Befunde.', 'a11y-content-check' ),
+								count( $results ),
+								$this->count_findings( $results )
+							)
+						);
+						?>
+					</p>
 				</div>
 			<?php endif; ?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Baut den Scanner mit allen Prüfungen.
+	 *
+	 * Dies ist die einzige Stelle, an der eine neue Prüfung eingetragen wird.
+	 */
+	private function create_scanner(): Scanner {
+		return new Scanner();
+	}
+
+	/**
+	 * Zählt alle Befunde über alle Beiträge hinweg.
+	 *
+	 * @param array<int, \A11yContentCheck\Finding[]> $results Ergebnis des Scanners.
+	 */
+	private function count_findings( array $results ): int {
+		$total = 0;
+
+		foreach ( $results as $findings ) {
+			$total += count( $findings );
+		}
+
+		return $total;
 	}
 }
