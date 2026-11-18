@@ -9,7 +9,9 @@ declare( strict_types = 1 );
 
 namespace A11yContentCheck\Admin;
 
+use A11yContentCheck\Checks\ImageAltCheck;
 use A11yContentCheck\Scanner;
+
 
 /**
  * Registriert und zeichnet die Seite "Barrierefreiheit" im Backend.
@@ -104,7 +106,9 @@ final class AdminPage {
 	 * Dies ist die einzige Stelle, an der eine neue Prüfung eingetragen wird.
 	 */
 	private function create_scanner(): Scanner {
-		return new Scanner();
+		return new Scanner(
+			new ImageAltCheck(),
+		);
 	}
 
 	/**
