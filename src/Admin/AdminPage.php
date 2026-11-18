@@ -10,8 +10,8 @@ declare( strict_types = 1 );
 namespace A11yContentCheck\Admin;
 
 use A11yContentCheck\Checks\ImageAltCheck;
+use A11yContentCheck\Checks\LinkTextCheck;
 use A11yContentCheck\Scanner;
-
 
 /**
  * Registriert und zeichnet die Seite "Barrierefreiheit" im Backend.
@@ -108,6 +108,12 @@ final class AdminPage {
 	private function create_scanner(): Scanner {
 		return new Scanner(
 			new ImageAltCheck(),
+			new LinkTextCheck(
+				(array) apply_filters(
+					'a11y_content_check_vague_link_texts',
+					LinkTextCheck::DEFAULT_VAGUE_TEXTS
+				)
+			),
 		);
 	}
 
